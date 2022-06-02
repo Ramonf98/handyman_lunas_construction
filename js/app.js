@@ -1,5 +1,8 @@
 import { allTranslations } from './translations.js';
 
+var xDown = null;
+var yDown = null;
+
 window.addEventListener('load', function () {
     /*-- Initialize the Image Slider --*/
     initializeGlider();
@@ -43,10 +46,9 @@ function changeLanguage(e, isLoading) {
 }
 
 function initializeGlider() {
-    new Glider(document.getElementById('slider__list'), {
+    new Glider(document.querySelector('.slider__list'), {
         slidesToShow: 1,
-        slidesToScroll: 1,
-        draggable: true,
+        scrollLock: true,
         dots: '.slider__indicators',
         arrows: {
             prev: '#arrow__left',
@@ -65,4 +67,48 @@ function initializeAnimateOnScroll() {
 
 function addEventListeners() {
     document.getElementById('lang_picker').addEventListener('click', changeLanguage);
+    document
+        .getElementById('slider')
+        .addEventListener('touchstart', handleTouchStart, false);
+    document
+        .getElementById('slider')
+        .addEventListener('touchmove', handleTouchMove, false);
+}
+
+function handleTouchStart(evt) {
+    const firstTouch = evt.touches[0];
+    xDown = firstTouch.clientX;
+    yDown = firstTouch.clientY;
+}
+
+function handleTouchMove(evt) {
+    if (!xDown || !yDown) {
+        return;
+    }
+
+    var xUp = evt.touches[0].clientX;
+    var yUp = evt.touches[0].clientY;
+
+    var xDiff = xDown - xUp;
+    var yDiff = yDown - yUp;
+
+    if (Math.abs(xDiff) > Math.abs(yDiff)) {
+        /*most significant*/
+        if (xDiff > 0) {
+            /* right swipe */
+            document.getElementById('arrow__right').click();
+        } else {
+            /* left swipe */
+            document.getElementById('arrow__left').click();
+        }
+    } else {
+        if (yDiff > 0) {
+            /* down swipe */
+        } else {
+            /* up swipe */
+        }
+    }
+    /* reset values */
+    xDown = null;
+    yDown = null;
 }
